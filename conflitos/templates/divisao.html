@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>    
@@ -5,59 +6,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Cadastro</title>
-    <link rel="stylesheet" href="../../conflitos/static/css/style.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-white" style="background:#332f2f;">          
-          <!-- Links -->
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link" href="index.html">Cadastro</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="grafics.html">Gráficos</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="lists.html">Consultas</a>
-            </li>
-          </ul>
-        </nav>
+      <nav class="navbar navbar-expand-sm navbar-white" style="background:#332f2f;">          
+        <!-- Links -->
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'homepage' %}">Cadastro</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'grafics' %}">Gráficos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'lists' %}">Consultas</a>
+          </li>
+        </ul>
+      </nav>
       </header>
     <section class="cadastro">
         <h1>Cadastrar Divisão</h1>
         <hr>
         <!-- Permita cadastrar divisões dentro de um grupo militar, cadastre conflitos bélicos, grupos militares, líderes políticos e chefes militares -->
-            <form name="cad_divisao" class="col-4 d-flex flex-wrap">
+            <form name="cad_divisao" method="post" action = "{% url 'teste-form' %}" class="col-4 d-flex flex-wrap">
+              {% csrf_token %}
                     <div class="col-md-8 col-lg-8 col-12">
-                        <label class="lbl-padrao">Nome Divisão:</label>
-                        <input class="inp-padrao" type="text" name="nome_divisao" required>
+                        <label class="lbl-padrao" for = "nome_divisao" >Nome Divisão:</label>
+                        <input class="inp-padrao" type="text" name="nome_divisao" id = "nome_divisao" required>
                     </div>
                     <div class="col-md-8 col-lg-8 col-12">
-                        <label class="lbl-padrao">Quantidade de Barcos:</label>
-                        <input class="inp-padrao" type="number" name="qtde_barcos" required>
+                        <label class="lbl-padrao" for = "qtde_barcos" >Quantidade de Barcos:</label>
+                        <input class="inp-padrao" type="number" id = "qtde_barcos" name="qtde_barcos" required>
                     </div>
                     <div class="col-md-8 col-lg-8 col-12">
-                        <label class="lbl-padrao">Quantidade de Tanques:</label>
-                        <input class="inp-padrao" type="number" name="qtde_tanques" required>
+                        <label class="lbl-padrao" for = "qtde_tanques" >Quantidade de Tanques:</label>
+                        <input class="inp-padrao" type="number" id = "qtde_tanques" name="qtde_tanques" required>
                     </div>
                     <div class="col-md-8 col-lg-8 col-12">
-                        <label class="lbl-padrao">Quantidade de Homens:</label>
-                        <input class="inp-padrao" type="number" name="qtde_homens" required>
+                        <label class="lbl-padrao" for="qtde_homens">Quantidade de Homens:</label>
+                        <input class="inp-padrao" type="number" id = "qtde_homens" name="qtde_homens" required>
                     </div>
                     <div class="col-md-8 col-lg-8 col-12">
-                        <label class="lbl-padrao">Quantidade de Aviões:</label>
-                        <input class="inp-padrao" type="number" name="qtde_avioes" required>
+                        <label class="lbl-padrao" for= "qtde_avioes">Quantidade de Aviões:</label>
+                        <input class="inp-padrao" type="number" id="qtde_avioes" name="qtde_avioes" required>
                     </div>
                     <div class="col-md-8 col-lg-8 col-12">
-                      <label class="lbl-padrao">Número de baixas:</label>
-                      <input class="inp-padrao" type="number" name="qtde_baixas" required>
+                      <label class="lbl-padrao" for = "qtde_baixas">Número de baixas:</label>
+                      <input class="inp-padrao" type="number" id="qtde_baixas" name="qtde_baixas" required>
                   </div>
-                    <div class="col-md-8 col-lg-8 col-12">
-                      <label class="lbl-padrao">Número de baixas:</label>
-                      <input class="inp-padrao" type="number" name="qtde_baixas" required>
-                  </div>
+                    
                   <div class="col-md-8 col-lg-8 col-12">
                     <label class="lbl-padrao">Grupo Armado:</label>
                   <select class="form-select" aria-label="Default select example" required>
