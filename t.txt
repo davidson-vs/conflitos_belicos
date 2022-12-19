@@ -1,0 +1,272 @@
+
+
+CREATE SCHEMA IF NOT EXISTS conflitosBelicos;
+
+
+
+CREATE TABLE IF NOT EXISTS  conflitosBelicos . Conflito  (
+   idConflito  INT NOT NULL,
+   Nome  VARCHAR(45) NOT NULL,
+   NumeroMortos  FLOAT NOT NULL,
+   NumeroFeridos  FLOAT NOT NULL,
+   TipoConflito  VARCHAR(10) NOT NULL,
+   FlagReligiao  BOOLEAN NOT NULL,
+   FlagRegiao  BOOLEAN NOT NULL,
+   FlagEconomico  BOOLEAN NOT NULL,
+   FlagEtnia  BOOLEAN NOT NULL,
+  PRIMARY KEY ( idConflito ));
+
+
+
+CREATE TABLE IF NOT EXISTS  conflitosBelicos . Pais  (
+   idPais  INT NOT NULL,
+   Nome  VARCHAR(45) NOT NULL,
+   Conflito_idConflito  INT NOT NULL,
+  PRIMARY KEY ( Conflito_idConflito ),
+  CONSTRAINT  fk_Pais_Conflito 
+    FOREIGN KEY ( Conflito_idConflito )
+    REFERENCES  conflitosBelicos . Conflito  ( idConflito ));
+
+
+-- -----------------------------------------------------
+-- Table  conflitosBelicos . OrganizacaoMediadora 
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS  conflitosBelicos . OrganizacaoMediadora  (
+   idOrganizacao  INT NOT NULL,
+   Nome  VARCHAR(45) NOT NULL,
+   Tipo  VARCHAR(45) NOT NULL,
+   Organizacao  VARCHAR(45) NOT NULL,
+  PRIMARY KEY ( idOrganizacao ))
+;
+
+
+-- -----------------------------------------------------
+-- Table  conflitosBelicos . GrupoArmado 
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS  conflitosBelicos . GrupoArmado  (
+   idGrupoArmado  INT NOT NULL,
+   Nome  VARCHAR(45) NOT NULL,
+   SomaBaixas  VARCHAR(45) NOT NULL,
+  PRIMARY KEY ( idGrupoArmado ));
+
+
+-- -----------------------------------------------------
+-- Table  conflitosBelicos . LiderPolitico 
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS  conflitosBelicos . LiderPolitico  (
+   Nome  VARCHAR(45) NOT NULL,
+   Descricao  VARCHAR(45) NULL,
+   IdLiderPolitico  INT NOT NULL,
+   GrupoArmado_idGrupoArmado  INT NOT NULL,
+  PRIMARY KEY ( IdLiderPolitico ),
+  INDEX  fk_LiderPolitico_GrupoArmado1_idx  ( GrupoArmado_idGrupoArmado ) ,
+  CONSTRAINT  fk_LiderPolitico_GrupoArmado1 
+    FOREIGN KEY ( GrupoArmado_idGrupoArmado )
+    REFERENCES  conflitosBelicos . GrupoArmado  ( idGrupoArmado ));
+
+
+-- -----------------------------------------------------
+-- Table  conflitosBelicos . Divisao 
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS  conflitosBelicos . Divisao  (
+   idDivisao  INT NOT NULL,
+   NumeroBarco  INT NULL,
+   NumeroTanque  INT NULL,
+   NumeroBaixas  INT NULL,
+   NumeroHomem  INT NULL,
+   NumeroAviao  INT NULL,
+   GrupoArmado_idGrupoArmado  INT NOT NULL,
+  PRIMARY KEY ( idDivisao ),
+  INDEX  fk_Divisão_GrupoArmado1_idx  ( GrupoArmado_idGrupoArmado  ) ,
+  CONSTRAINT  fk_Divisão_GrupoArmado1 
+    FOREIGN KEY ( GrupoArmado_idGrupoArmado )
+    REFERENCES  conflitosBelicos . GrupoArmado  ( idGrupoArmado ));
+
+
+-- -----------------------------------------------------
+-- Table  conflitosBelicos . ChefeMilitar 
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS  conflitosBelicos . ChefeMilitar  (
+   idChefeMilitar  INT NOT NULL,
+   Nome  VARCHAR(45) NOT NULL,
+   FaixaHierarquica  VARCHAR(45) NOT NULL,
+   LiderPolitico_IdLiderPolitico  INT NOT NULL,
+   Divisão_idDivisão  INT NOT NULL,
+  PRIMARY KEY ( idChefeMilitar ),
+  INDEX  fk_ChefeMilitar_LiderPolitico1_idx  ( LiderPolitico_IdLiderPolitico  ) ,
+  INDEX  fk_ChefeMilitar_Divisão1_idx  ( Divisão_idDivisão  ) ,
+  CONSTRAINT  fk_ChefeMilitar_LiderPolitico1 
+    FOREIGN KEY ( LiderPolitico_IdLiderPolitico )
+    REFERENCES  conflitosBelicos . LiderPolitico  ( IdLiderPolitico ),
+  CONSTRAINT  fk_ChefeMilitar_Divisão1 
+    FOREIGN KEY ( Divisão_idDivisão )
+    REFERENCES  conflitosBelicos . Divisao  ( idDivisao ));
+
+
+-- -----------------------------------------------------
+-- Table  conflitosBelicos . Participacao 
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS  conflitosBelicos . Participacao  (   
+   idParticipacao  INT NOT NULL,
+   DtEntrada  DATE NOT NULL,
+   DtSaida  DATE NOT NULL,
+   Conflito_idConflito  INT NOT NULL,
+   GrupoArmado_idGrupoArmado  INT NOT NULL,
+  PRIMARY KEY ( idParticipacao ),
+  INDEX  fk_Participacao_Conflito1_idx  ( Conflito_idConflito  ) ,
+  INDEX  fk_Participacao_GrupoArmado1_idx  ( GrupoArmado_idGrupoArmado  ) ,
+  CONSTRAINT  fk_Participacao_Conflito1 
+    FOREIGN KEY ( Conflito_idConflito )
+    REFERENCES  conflitosBelicos . Conflito  ( idConflito ),
+  CONSTRAINT  fk_Participacao_GrupoArmado1 
+    FOREIGN KEY ( GrupoArmado_idGrupoArmado )
+    REFERENCES  conflitosBelicos . GrupoArmado  ( idGrupoArmado ));
+
+
+-- -----------------------------------------------------
+-- Table  conflitosBelicos . Mediacao 
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS  conflitosBelicos . Mediacao  (
+   idMediacao  INT NOT NULL,
+   TipoAjuda  VARCHAR(45) NOT NULL,
+   QtdPessoas  VARCHAR(45) NOT NULL,
+   DtEntrada  DATE NULL,
+   DtSaida  DATE NULL,
+   Conflito_idConflito  INT NOT NULL,
+   OrganizacaoMediadora_idOrganizacao  INT NOT NULL,
+  PRIMARY KEY ( idMediacao ),
+  INDEX  fk_Mediacao_Conflito1_idx  ( Conflito_idConflito  ) ,
+  INDEX  fk_Mediacao_OrganizacaoMediadora1_idx  ( OrganizacaoMediadora_idOrganizacao  ) ,
+  CONSTRAINT  fk_Mediacao_Conflito1 
+    FOREIGN KEY ( Conflito_idConflito )
+    REFERENCES  conflitosBelicos . Conflito  ( idConflito ),
+    CONSTRAINT  fk_Mediacao_OrganizacaoMediadora1 
+    FOREIGN KEY ( OrganizacaoMediadora_idOrganizacao )
+    REFERENCES  conflitosBelicos . OrganizacaoMediadora  ( idOrganizacao ));
+
+
+-- -----------------------------------------------------
+-- Table  conflitosBelicos . Traficante 
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS  conflitosBelicos . Traficante  (
+   idTraficante  INT NOT NULL,
+   Nome  VARCHAR(45) NULL,
+  PRIMARY KEY ( idTraficante ));
+
+
+-- -----------------------------------------------------
+-- Table  conflitosBelicos . Arma 
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS  conflitosBelicos . Arma  (
+   idArma  INT NOT NULL,
+   TipoArma  VARCHAR(45) NOT NULL,
+   Nome  VARCHAR(45) NULL,
+   CapacidadeDestrutiva  INT NULL,
+   Traficante_idTraficante  INT NOT NULL,
+  PRIMARY KEY ( idArma ),
+  INDEX  fk_Arma_Traficante1_idx  ( Traficante_idTraficante    )    ,
+  CONSTRAINT  fk_Arma_Traficante1 
+    FOREIGN KEY ( Traficante_idTraficante )
+    REFERENCES  conflitosBelicos . Traficante  ( idTraficante ));
+
+
+-- -----------------------------------------------------
+-- Table  conflitosBelicos . Negociacao 
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS  conflitosBelicos . Negociacao  (
+   QtdArma  INT NOT NULL,
+   IdNegociacao  INT NOT NULL,
+   GrupoArmado_idGrupoArmado  INT NOT NULL,
+   Traficante_idTraficante  INT NOT NULL,
+   Arma_idArma  INT NOT NULL,
+  PRIMARY KEY ( IdNegociacao ),
+  INDEX  fk_Negociacao_GrupoArmado1_idx  ( GrupoArmado_idGrupoArmado    )    ,
+  INDEX  fk_Negociacao_Traficante1_idx  ( Traficante_idTraficante    )    ,
+  INDEX  fk_Negociacao_Arma1_idx  ( Arma_idArma    )    ,
+  CONSTRAINT  fk_Negociacao_GrupoArmado1 
+    FOREIGN KEY ( GrupoArmado_idGrupoArmado )
+    REFERENCES  conflitosBelicos . GrupoArmado  ( idGrupoArmado ),
+  CONSTRAINT  fk_Negociacao_Traficante1 
+    FOREIGN KEY ( Traficante_idTraficante )
+    REFERENCES  conflitosBelicos . Traficante  ( idTraficante ),
+  CONSTRAINT  fk_Negociacao_Arma1 
+    FOREIGN KEY ( Arma_idArma )
+    REFERENCES  conflitosBelicos . Arma  ( idArma ));
+
+
+-- -----------------------------------------------------
+-- Table  conflitosBelicos . Dialogo 
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS  conflitosBelicos . Dialogo  (
+   idDialogo  INT NOT NULL,
+   Discussao  LONGTEXT NOT NULL,
+   Organizacao_idOrganizacao  INT NOT NULL,
+   LiderPolitico_IdLiderPolitico  INT NOT NULL,
+  PRIMARY KEY ( idDialogo ,  Organizacao_idOrganizacao ,  LiderPolitico_IdLiderPolitico ),
+  INDEX  fk_Dialogo_Organizacao1_idx  ( Organizacao_idOrganizacao    )    ,
+  INDEX  fk_Dialogo_LiderPolitico1_idx  ( LiderPolitico_IdLiderPolitico    )    ,
+  CONSTRAINT  fk_Dialogo_Organizacao1 
+    FOREIGN KEY ( Organizacao_idOrganizacao )
+    REFERENCES  conflitosBelicos . OrganizacaoMediadora  ( idOrganizacao ),
+  CONSTRAINT  fk_Dialogo_LiderPolitico1 
+    FOREIGN KEY ( LiderPolitico_IdLiderPolitico )
+    REFERENCES  conflitosBelicos . LiderPolitico  ( IdLiderPolitico ));
+
+
+-- -----------------------------------------------------
+-- Table  conflitosBelicos . Regiao 
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS  conflitosBelicos . Regiao  (
+   IdRegiao  INT NOT NULL,
+   Nome  VARCHAR(45) NOT NULL,
+   Conflito_idConflito  INT NOT NULL,
+  PRIMARY KEY ( IdRegiao ),
+  INDEX  fk_Regiao_Conflito1_idx  ( Conflito_idConflito    )    ,
+  CONSTRAINT  fk_Regiao_Conflito1 
+    FOREIGN KEY ( Conflito_idConflito )
+    REFERENCES  conflitosBelicos . Conflito  ( idConflito ));
+
+
+
+
+-- -----------------------------------------------------
+-- Table  conflitosBelicos . Religiao 
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS  conflitosBelicos . Religiao  (
+   IdReligiao  INT NOT NULL,
+   Nome  VARCHAR(45) NOT NULL,
+   Conflito_idConflito  INT NOT NULL,
+  PRIMARY KEY ( IdReligiao ),
+  INDEX  fk_Religiao_Conflito1_idx  ( Conflito_idConflito    )    ,
+  CONSTRAINT  fk_Religiao_Conflito1 
+    FOREIGN KEY ( Conflito_idConflito )
+    REFERENCES  conflitosBelicos . Conflito  ( idConflito ));
+
+
+-- -----------------------------------------------------
+-- Table  conflitosBelicos . Etnia 
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS  conflitosBelicos . Etnia  (
+   IdEtnia  INT NOT NULL,
+   Nome  VARCHAR(45) NOT NULL,
+   Conflito_idConflito  INT NOT NULL,
+  PRIMARY KEY ( IdEtnia ),
+  INDEX  fk_Etnia_Conflito1_idx  ( Conflito_idConflito    )    ,
+  CONSTRAINT  fk_Etnia_Conflito1 
+    FOREIGN KEY ( Conflito_idConflito )
+    REFERENCES  conflitosBelicos . Conflito  ( idConflito ));
+
+
+-- -----------------------------------------------------
+-- Table  conflitosBelicos . Economia 
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS  conflitosBelicos . MateriaPrima  (
+   IdEconomia  INT NOT NULL,
+   Nome  VARCHAR(45) NOT NULL,
+   Conflito_idConflito  INT NOT NULL,
+  primary key( IdEconomia ),
+  INDEX  fk_Economia_Conflito1_idx  ( Conflito_idConflito    )    ,
+  CONSTRAINT  fk_Economia_Conflito1 
+    FOREIGN KEY ( Conflito_idConflito )
+    REFERENCES  conflitosBelicos . Conflito  ( idConflito ));

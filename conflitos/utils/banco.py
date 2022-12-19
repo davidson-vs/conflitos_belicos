@@ -2,10 +2,10 @@ import psycopg2 as pg
  
 class Banco:
     @staticmethod
-    def connection(host: str = 'localhost', database:str = 'db_conflitos_belicos', user:str ='postgres', password: str = ""):
+    def connection(host: str = 'localhost', database:str = 'db_conflitos_belicos', user:str ='postgres', password: str = "virtual10"):
         try:
-            cxn = pg.connect(f'host = {host} database={database} user = {user} password = {password}')
-            if cxn is True:
+            cxn = pg.connect(f'host = {host} dbname={database} user = {user} password = {password} ')
+            if cxn :
                 return cxn
         except Exception as cxn_error:
             print(f'erro ao se conectar ao banco de dados: {cxn_error}')
@@ -24,7 +24,7 @@ class Banco:
                 cursor.executemany(query, params)
 
             if persistence:
-                cursor.commit()
+                cxn.commit()
                 if cursor.rowcount > 1:
                     print('Affected rows: {}'.format(cursor.rowcount))
         except pg.IntegrityError as ie:
@@ -63,12 +63,3 @@ class Banco:
         proc = no_count + query
         result = self.get_multiple_result(cxn, proc)
         return result
-
-teste = Banco()
-
-cxn = teste.connection()
-
-if cxn:
-    print('boa')
-else: 
-    print('xiiii')
