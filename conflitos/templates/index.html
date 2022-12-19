@@ -30,7 +30,9 @@
         <h1>Cadastro</h1>
         <hr>
         <!-- Permita cadastrar divisões dentro de um grupo militar, cadastre conflitos bélicos, grupos militares, líderes políticos e chefes militares -->
-            <div class="col-md-8 col-lg-8 col-12">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-6 col-lg-6 col-6">
                 <a class="btn btn-light" href="{% url 'divisao' %}" role="button">Cadastrar divisão</a><br><br>
                 <a class="btn btn-light" href="{% url 'conflitos' %}" role="button">Cadastrar conflitos bélicos</a><br><br>
                 <a class="btn btn-light" href="{% url 'grupo_armado' %}" role="button">Cadastrar grupos militares</a><br><br>
@@ -38,14 +40,18 @@
                 <a class="btn btn-light" href="{% url 'chefe_militar' %}" role="button">Cadastrar chefes militares</a><br><br>
                 <a class="btn btn-light" href="{% url 'arma' %}" role="button">Cadastrar arma</a><br><br>
                 <a class="btn btn-light" href="{% url 'traficante' %}" role="button">Cadastrar traficante</a><br><br>
+              </div>
+              <div class="col-md-6 col-lg-6 col-6">
                 <a class="btn btn-light" href="{% url 'negociacao' %}" role="button">Cadastrar negociação</a><br><br>
                 <a class="btn btn-light" href="{% url 'pais' %}" role="button">Cadastrar país</a><br><br>
                 <a class="btn btn-light" href="{% url 'participacao' %}" role="button">Cadastrar participação</a><br><br>
                 <a class="btn btn-light" href="{% url 'mediacao' %}" role="button">Cadastrar mediação</a><br><br>
                 <a class="btn btn-light" href="{% url 'organizacao_mediadora' %}" role="button">Cadastrar organização mediadora</a><br><br>
                 <a class="btn btn-light" href="{% url 'dialogo' %}" role="button">Cadastrar Dialogo</a><br><br>
-
+              </div>
             </div>
+          </div>
+           
     </section>
 
     
