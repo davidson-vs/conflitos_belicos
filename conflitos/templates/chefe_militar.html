@@ -30,7 +30,8 @@
         <h1>Cadastrar Chefe Militar</h1>
         <hr>
         <!-- Permita cadastrar divisões dentro de um grupo militar, cadastre conflitos bélicos, grupos militares, líderes políticos e chefes militares -->
-            <form name="cad_chefe" class="col-4 d-flex flex-wrap">
+            <form name="cad_chefe" class="col-4 d-flex flex-wrap" method="post">
+              {% csrf_token %}
                     <div class="col-md-8 col-lg-8 col-12">
                         <label class="lbl-padrao">Nome Chefe Militar:</label>
                         <input class="inp-padrao" type="text" name="chefe_militar" required>

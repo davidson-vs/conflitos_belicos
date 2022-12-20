@@ -22,9 +22,9 @@ def chefe_militar(request):
         db = Banco()
         context = {}
         cxn = db.connection()
-        insert_query = """ INSERT INTO conflitosBelicos.ChefeMilitar ( Nome, FaixaHierarquica, IdLiderpolitico, IdDivisao)
-            VALUES (?, ?, ?, ?) """
-        consult = """SELECT"""
+        insert_query = f""" INSERT INTO conflitosBelicos.ChefeMilitar ( Nome, FaixaHierarquica, IdLiderpolitico, IdDivisao)
+            VALUES ('{nm_chefe}', '{descricao_lider}', '{lider_politico}', '{divisao}') """
+        
         if request.method == 'POST':
             # aqui vc recebe o valor de cada campo do form
             nm_chefe = request.POST.get('chefe_militar', None)
@@ -32,9 +32,7 @@ def chefe_militar(request):
             lider_politico = request.POST.get('lider_politico', None)
             divisao = request.POST.get('divisao', None)
 
-            # db.execute_query(cxn, query, persistence=True, params=(
-            #     nm_chefe, descricao_lider, lider_politico, divisao
-            # )) 
+            # db.execute_query(cxn, insert_query, persistence=True,) 
 
     except Exception as cf_militar_error:
         print(cf_militar_error)
@@ -46,9 +44,9 @@ def conflitos(request):
         db = Banco()
         context = {}
         cxn = db.connection()
-        query = """ INSERT INTO conflitosBelicos.Conflitos ( Nome, NumeroMortos, NumFeridos, TipoConflito,
+        query = f""" INSERT INTO conflitosBelicos.Conflitos ( Nome, NumeroMortos, NumFeridos, TipoConflito,
         FlagReligiao, Flagregiao, FlagEconomico, FlagEtnia)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?) """
+            VALUES ('{nome}', {qtde_mortos}, {qtde_feridos}, '{pais}') """
         if request.method == 'POST':
             # aqui vc recebe o valor de cada campo do form
             nome = request.POST.get('nome_org_mediadora', None)
@@ -106,16 +104,16 @@ def grupo_armado(request):
         db = Banco()
         context = {}
         cxn = db.connection()
-        query = """ INSERT INTO conflitosBelicos.GrupoArmado ( Nome )
-            VALUES (?) """
+        
         if request.method == 'POST':
             # aqui vc recebe o valor de cada campo do form
             nome = request.POST.get('nome_grupo_armado', None)
 
-            # db.execute_query(cxn, query, persistence=True, params=(
-            #     nome
-            # ))        
-            # 
+            query = f""" INSERT INTO conflitosbelicos.grupoarmado ( nome )
+            VALUES ('{nome}') """
+
+            db.execute_query(cxn, query, persistence=True)        
+            
             context['mensagem'] = 'Cadastro realizado com sucesso!'   
         
     except Exception as tp_conflito_error:
@@ -135,12 +133,12 @@ def liders_politicos(request):
         if request.method == 'POST':
             # aqui vc recebe o valor de cada campo do form
             nome = request.POST.get('lider_politico', None)
-            
 
-            # db.execute_query(cxn, query, persistence=True, params=(
-            #     nome
-            # ))        
-            # 
+
+            db.execute_query(cxn, query, persistence=True, params=(
+                nome
+            ))        
+            
             context['mensagem'] = 'Cadastro realizado com sucesso!'   
         
     except Exception as tp_conflito_error:
@@ -196,16 +194,14 @@ def pais(request):
         db = Banco()
         context = {}
         cxn = db.connection()
-        query = """ INSERT INTO conflitosBelicos.Pais ( Nome )
-            VALUES (?) """
+       
         if request.method == 'POST':
             # aqui vc recebe o valor de cada campo do form
             nome = request.POST.get('nome_pais', None)
-
-            # db.execute_query(cxn, query, persistence=True, params=(
-            #     nome
-            # ))        
-            # 
+            query = f""" INSERT INTO conflitosBelicos.Pais ( Nome )
+            VALUES ('{nome}') """
+            db.execute_query(cxn, query, persistence=True)        
+            
             context['mensagem'] = 'Cadastro realizado com sucesso!'   
 
     except Exception as tp_conflito_error:

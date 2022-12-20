@@ -30,7 +30,8 @@
         <h1>Cadastrar Tipo do Conflito</h1>
         <hr>
         <!-- Permita cadastrar divisões dentro de um grupo militar, cadastre conflitos bélicos, grupos militares, líderes políticos e chefes militares -->
-            <form name="cad_tipo_conflito" class="col-4 d-flex flex-wrap">
+            <form name="cad_tipo_conflito" class="col-4 d-flex flex-wrap" method="post">
+              {% csrf_token %}
                   <div class="col-md-8 col-lg-8 col-12">
                     <label class="lbl-padrao">Conflito de caráter:</label>
                   <select class="form-select" aria-label="Default select example" required>

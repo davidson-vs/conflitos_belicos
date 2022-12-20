@@ -28,13 +28,14 @@ class Banco:
                 if cursor.rowcount > 1:
                     print('Affected rows: {}'.format(cursor.rowcount))
         except pg.IntegrityError as ie:
-            print('An integrity error has occurred.', exc_info=True)
+            print('An integrity error has occurred.')
             raise ie
         except Exception as e:
             print("Error while running a query execution: {}".format(e))
             raise Exception("Error while running a query execution: {}".format(e))
         finally:
             cursor.close()
+            cxn.close()
 
     @staticmethod
     def get_multiple_result(cxn, query, *args):
