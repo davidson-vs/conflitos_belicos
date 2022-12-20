@@ -61,7 +61,9 @@
                     <label class="lbl-padrao">Grupo Armado:</label>
                   <select class="form-select" aria-label="Default select example" name="select_divisao" required>
                     <option selected disabled value = "">Selecione o grupo armado da divisão</option>   
-                    <option value="1">Grupo armado 1</option>
+                    {% for row in data %}
+                        <option value= " {{ row.idgrupoarmado }} ">{{ row.nome }}</option>
+                    {% endfor %}
                     </select>
                     <br>*É necessário cadastrar um grupo armado caso não tenha nenhum cadastrado. Clique <a href="{% url 'grupo_armado' %}">aqui</a> para cadastra-lo <br>
                     <input type="submit" class="btn btn-light" id="enviar" value="Enviar">
