@@ -30,7 +30,7 @@
         <h1>Cadastrar Diálogo entre organização e líder político</h1>
         <hr>
         <!-- Permita cadastrar divisões dentro de um grupo militar, cadastre conflitos bélicos, grupos militares, líderes políticos e chefes militares -->
-            <form name="cad_dialogo" method="post" action = "{% url 'teste-form' %}" class="col-4 d-flex flex-wrap">
+            <form name="cad_dialogo" method="post" action = "{% url 'dialogo' %}" class="col-4 d-flex flex-wrap">
               {% csrf_token %}
                     <div class="col-md-8 col-lg-8 col-12">
                         <label class="lbl-padrao">Diálogo:</label>
