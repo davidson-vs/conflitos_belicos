@@ -38,29 +38,36 @@
                     </div>
                     <div class="col-md-8 col-lg-8 col-12">
                         <label class="lbl-padrao">Quantidade de Mortos:</label>
-                        <input class="inp-padrao" type="number" step=".01" name="qtde_mortos" required>
+                        <input class="inp-padrao" type="number" name="qtde_mortos" required>
                     </div>
                     <div class="col-md-8 col-lg-8 col-12">
                         <label class="lbl-padrao">Quantidade de Feridos:</label>
-                        <input class="inp-padrao" type="number" step=".01" name="qtde_feridos" required>
+                        <input class="inp-padrao" type="number" name="qtde_feridos" required>
                     </div>
+                    <div class="col-md-8 col-lg-8 col-12">
+                      <label class="lbl-padrao">Tipo Conflito:</label>
+                      <select class="form-select" aria-label="Default select example" name="tp_conflito" required>
+                        <option selected disabled >Selecione a causa do conflito</option>
+                        <option value="territorial">Territorial</option>
+                        <option value="religioso">Religioso</option>
+                        <option value="economico">Econômico</option>
+                        <option value="racial">Racial</option>
+                        </select>
+                      
+                  </div>
                     <div class="col-md-8 col-lg-8 col-12">
                       <label class="lbl-padrao">País:</label>
                       <select class="form-select" aria-label="Default select example" name="pais" required>
                           <option selected disabled>Selecione o país do conflito</option>
-                          <option value="1">País 1</option>
+                          
+                          {% for row in data %}
+                            <option value="{{row.idpais}}">{{row.nome}}</option>
+                          {% endfor %}
                           </select>
                           <br>*É necessário cadastrar um país caso não tenha nenhum cadastrado. Clique <a href="{% url 'pais' %}">aqui</a> para cadastra-lo <br>
+                          <input type="submit" class="btn btn-light" id="enviar" value="Enviar">
                   </div>
-                    <div class="col-md-8 col-lg-8 col-12">
-                        <label class="lbl-padrao">Tipo Conflito:</label>
-                    <select class="form-select" aria-label="Default select example" name="tp_conflito"required>
-                        <option selected disabled>Selecione o tipo do conflito</option>
-                        <option value="1">Tipo conflito 1</option>
-                        </select>
-                        <br>*É necessário cadastrar um tipo de conflito caso não tenha nenhum cadastrado. Clique <a href="{% url 'tipo_conflito' %}">aqui</a> para cadastra-lo <br>
-                        <input type="submit" class="btn btn-light" id="enviar" value="Enviar">
-                    </div>
+        
               </form>
     </section>
 

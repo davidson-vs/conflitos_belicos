@@ -26,22 +26,16 @@
         </ul>
       </nav>
       </header>
-    <section class="cadastro">
-        <h1>Gráficos</h1>
+    
+        <h1>Gráfico</h1>
         <hr>
-            <form name="input-grafico" class="col-4 d-flex flex-wrap" method="post">
-                    <div class="col-md-8 col-lg-8 col-12">
-                        <label class="lbl-padrao">Insira o tipo de conflito:</label>
-                        <input class="inp-padrao" type="text" name="tipo_conflito" required>
-                    </div>
-                    <div class="col-md-8 col-lg-8 col-12">
-                        <label class="lbl-padrao">Insira o número de conflitos:</label>
-                        <input class="inp-padrao" type="number" name="num_conflito" required>
-                        
-                        <input type="submit" class="btn btn-light" id="enviar" value="Gerar gráficos">
-                    </div>
+        <center>
+        <h2>Histograma por tipo de conflito e número de conflitos</h2>
+        <br>
+        <img src="{% static 'images/histograma.jpg' %}" alt="histograma"> 
+        </center>
 
-    </section>
+    
 
     
     

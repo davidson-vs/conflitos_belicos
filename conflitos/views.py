@@ -1,6 +1,10 @@
+import os
+import io
+import json
 import psycopg2
 import pandas as pd
 
+import matplotlib.pyplot as plt
 from .utils.banco import Banco
 from django.shortcuts import render
 
@@ -11,7 +15,24 @@ def homepage(request):
     return render(request, 'index.html', status=200, context={})
 
 def grafics_page(request):
-    return render(request, 'grafics.html', status=200, context={})
+    try:
+        db = Banco()
+        cxn = db.connection()
+        consult = "SELECT TipoConflito FROM conflitosBelicos.Conflito"
+        data = db.get_multiple_result(cxn, consult)
+        df = pd.DataFrame(data)
+        
+        plt.figure(figsize=(14, 7))
+        plt.xlabel('Tipo de Conflito', fontsize=18)
+        plt.ylabel('Número de Conflitos', fontsize=18)
+        plt.tick_params(labelsize=12)
+        plt.hist(df, len(set(df['tipoconflito'])), rwidth=0.8, color='#435f70', alpha=0.7, edgecolor='black')
+        plt.savefig("./conflitos/static/images/histograma.jpg", format='jpg')
+        
+    except Exception as gf_error:
+        ...
+    finally:
+        return render(request, 'grafics.html', status=200)
 
 def lists_page(request):
     return render(request, 'lists.html', status=200, context={})
@@ -22,7 +43,13 @@ def chefe_militar(request):
         db = Banco()
         context = {}
         cxn = db.connection()
+        consult_lider_politico = """SELECT IdLiderPolitico, Nome From conflitosBelicos.LiderPolitico"""
+        data_lp = db.get_multiple_result(cxn, consult_lider_politico)
+        context['data_lp'] = data_lp
         
+        consult_divisao = """SELECT IdLiderPolitico, Nome From conflitosBelicos.Divisao"""
+        data_d = db.get_multiple_result(cxn, consult_divisao)
+        context['data_d'] = data_d
         
         if request.method == 'POST':
             # aqui vc recebe o valor de cada campo do form
@@ -39,25 +66,27 @@ def chefe_militar(request):
     except Exception as cf_militar_error:
         print(cf_militar_error)
     finally:
-        return render(request, 'chefe_militar.html', status=200, context={})
+        return render(request, 'chefe_militar.html', status=200, context=context)
 
 def conflitos(request):
     try:
         db = Banco()
         context = {}
         cxn = db.connection()
-        
+        consult = """SELECT IdPais, Nome FROM conflitosBelicos.Pais"""
+        data = db.get_multiple_result(cxn, consult)
+        context['data'] = data
         if request.method == 'POST':
             # aqui vc recebe o valor de cada campo do form
-            nome = request.POST.get('nome_org_mediadora', None)
+            nome = request.POST.get('nome_conflito', None)
             qtde_mortos = request.POST.get('qtde_mortos', None)
             qtde_feridos = request.POST.get('qtde_feridos', None)
             pais = request.POST.get('pais', None)
             tp_conflito = request.POST.get('tp_conflito', None)
 
-            query = f""" INSERT INTO conflitosBelicos.Conflitos ( Nome, NumeroMortos, NumFeridos, TipoConflito,
+            query = f""" INSERT INTO conflitosBelicos.Conflito ( Nome, NumeroMortos, NumeroFeridos, TipoConflito,
             IdPais)
-            VALUES ('{nome}', {qtde_mortos}, {qtde_feridos}, {tp_conflito}, {pais}) """
+            VALUES ('{nome}', {qtde_mortos}, {qtde_feridos}, '{tp_conflito}', {pais}) """
 
             db.execute_query(cxn, query, persistence=True)        
             
@@ -67,7 +96,7 @@ def conflitos(request):
         context['mensagem'] = 'Falha ao realizar o cadastro!'   
         print(tp_conflito_error)
     finally:
-        return render(request, 'conflitos.html', status=200, context={})
+        return render(request, 'conflitos.html', status=200, context=context)
     
 
 #quando for criar a tabela da divisão fazer o id se autoincrementar
@@ -81,7 +110,6 @@ def divisao(request):
         context['data'] = data
         if request.method == 'POST':
             # aqui vc recebe o valor de cada campo do form
-            nm_divisao = request.POST.get('nome_divisao', None)
             qtde_barcos = request.POST.get('qtde_barcos', None)
             qtde_tanques = request.POST.get('qtde_tanques', None)
             qtde_homens = request.POST.get('qtde_homens', None)
@@ -89,8 +117,8 @@ def divisao(request):
             qtde_baixas = request.POST.get('qtde_baixas', None)
             select_divisao = request.POST.get('select_divisao', None)
 
-            query = f""" INSERT INTO conflitosBelicos.Divisao ( NmDivisao, NumeroBarcos, NumeroTanques, NumeroBaixas, NumeroHomens, NumeroAvioes, IdGrupoArmado)
-            VALUES ('{nm_divisao}', {qtde_barcos}, {qtde_tanques}, {qtde_baixas}, {qtde_homens}, {qtde_avioes}, {select_divisao}) """
+            query = f""" INSERT INTO conflitosBelicos.Divisao ( NumeroBarcos, NumeroTanques, NumeroBaixas, NumeroHomens, NumeroAvioes, IdGrupoArmado)
+            VALUES ( {qtde_barcos}, {qtde_tanques}, {qtde_baixas}, {qtde_homens}, {qtde_avioes}, {select_divisao}) """
             
             db.execute_query(cxn, query, persistence=True)        
             
@@ -132,7 +160,9 @@ def liders_politicos(request):
         db = Banco()
         context = {}
         cxn = db.connection()
-        
+        consult = """SELECT IdGrupoArmado, Nome FROM conflitosBelicos.GrupoArmado"""
+        data = db.get_multiple_result(cxn, consult)
+        context['data'] = data
         if request.method == 'POST':
             # aqui vc recebe o valor de cada campo do form
             nome = request.POST.get('lider_politico', None)
@@ -150,11 +180,47 @@ def liders_politicos(request):
         context['mensagem'] = 'Falha ao realizar o cadastro!'   
         print(tp_conflito_error)
     finally:
-        return render(request, 'lideres_politicos.html', status=200, context={})
+        return render(request, 'lideres_politicos.html', status=200, context=context)
     
 # TODO: perguntar se vai verificar o tipo para fazer o insert na tabela
 def tipo_conflito(request):
-    return render(request, 'tipo_conflito.html', status=200, context={})
+    try:
+        db = Banco()
+        context = {}
+        # headers = json.load(open(r'{}\conflitos\utils\tp_conflitos.json'.format(os.getcwd()), 'r'))
+        with open(r'{}\conflitos\utils\tp_conflitos.json'.format(os.getcwd()), encoding='utf8') as f:
+            headers = json.load(f)
+            context['json'] = [headers]
+        cxn = db.connection()
+        consult = """SELECT IdGrupoArmado, Nome From conflitosBelicos.GrupoArmado"""
+        data = db.get_multiple_result(cxn, consult)
+        context['data'] = data
+        
+
+        if request.method == 'POST':
+            # aqui vc recebe o valor de cada campo do form
+            qtde_barcos = request.POST.get('qtde_barcos', None)
+            qtde_tanques = request.POST.get('qtde_tanques', None)
+            qtde_homens = request.POST.get('qtde_homens', None)
+            qtde_avioes = request.POST.get('qtde_avioes', None)
+            qtde_baixas = request.POST.get('qtde_baixas', None)
+            select_divisao = request.POST.get('select_divisao', None)
+
+            query = f""" INSERT INTO conflitosBelicos.Divisao ( NumeroBarcos, NumeroTanques, NumeroBaixas, NumeroHomens, NumeroAvioes, IdGrupoArmado)
+            VALUES ( {qtde_barcos}, {qtde_tanques}, {qtde_baixas}, {qtde_homens}, {qtde_avioes}, {select_divisao}) """
+            
+            response = db.execute_query(cxn, query, persistence=True)        
+
+            if response:
+                context['mensagem'] = 'Cadastro realizado com sucesso!'
+            else:
+                context['mensagem'] = 'Os dados não foram inseridos por conta da regra de negócio.'   
+        
+    except Exception as tp_conflito_error:
+        context['mensagem_erro'] = 'Falha ao realizar o cadastro!'   
+        print(tp_conflito_error)
+    finally:
+        return render(request, 'tipo_conflito.html', status=200, context={})
 
 def arma(request):
     try:
@@ -218,11 +284,10 @@ def negociacao(request):
             # aqui vc recebe o valor de cada campo do form
             qtde_armas = request.POST.get('qtde_armas', None)
             select_negociacao_grupo_armado = request.POST.get('select_negociacao_grupo_armado', None)
-            select_negociacao_traficante = request.POST.get('select_negociacao_traficante', None)
             select_negociacao_arma = request.POST.get('select_negociacao_arma', None)
 
-            query = f""" INSERT INTO conflitosBelicos.Negociacao ( QtdeArma, IdGrupoArmado, IdTraficante, IdArma )
-            VALUES ('{qtde_armas}', {select_negociacao_grupo_armado}, {select_negociacao_traficante}, {select_negociacao_arma}) """
+            query = f""" INSERT INTO conflitosBelicos.Negociacao ( QtdeArma, IdGrupoArmado, IdArma )
+            VALUES ('{qtde_armas}', {select_negociacao_grupo_armado},  {select_negociacao_arma}) """
             db.execute_query(cxn, query, persistence=True)        
             
             context['mensagem'] = 'Cadastro realizado com sucesso!'   
@@ -270,10 +335,10 @@ def organizacao_mediadora(request):
             # aqui vc recebe o valor de cada campo do form
             nome = request.POST.get('nome_org_mediadora', None)
             tipo = request.POST.get('tipo_org_mediadora', None)
-            org = request.POST.get('org_org_mediadora', None)
+            # org = request.POST.get('org_org_mediadora', None)
 
-            query = f""" INSERT INTO conflitosBelicos.OrganizacaoMediadora ( Nome, Tipo, Organizacao )
-            VALUES ('{nome}', '{tipo}', '{org}') """
+            query = f""" INSERT INTO conflitosBelicos.OrganizacaoMediadora ( Nome, Tipo )
+            VALUES ('{nome}', '{tipo}') """
 
             db.execute_query(cxn, query, persistence=True)        
             

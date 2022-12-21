@@ -38,11 +38,17 @@
                     </div>
                     <div class="col-md-8 col-lg-8 col-12">
                         <label class="lbl-padrao" for = "tipo_org_mediadora" >Tipo:</label>
-                        <input class="inp-padrao" type="text" name="tipo_org_mediadora" id = "tipo_org_mediadora" required>
+                        <select class="form-select" aria-label="Default select example" name=""required>
+                          <option selected disabled>Selecione o tipo da organização:</option>
+                          <option value="governamental">Governamental</option>
+                          <option value="nao governamental">Não Governamental</option>
+                          <option value="internacional">Internacional</option>
+                          
+                          </select>
                     </div>
                     <div class="col-md-8 col-lg-8 col-12">
-                        <label class="lbl-padrao" for = "org_org_mediadora" >Organização:</label>
-                        <input class="inp-padrao" type="text" name="org_org_mediadora" id = "org_org_mediadora" required>
+                        {% comment %} <label class="lbl-padrao" for = "org_org_mediadora" >Organização:</label>
+                        <input class="inp-padrao" type="text" name="org_org_mediadora" id = "org_org_mediadora" required> {% endcomment %}
                         
                         <input type="submit" class="btn btn-light" id="enviar" value="Enviar">
                     </div>

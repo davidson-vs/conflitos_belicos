@@ -25,8 +25,12 @@ class Banco:
 
             if persistence:
                 cxn.commit()
-                if cursor.rowcount > 1:
+                if cursor.rowcount >= 1:
                     print('Affected rows: {}'.format(cursor.rowcount))
+                    return True
+                else:
+                    print('Nenhuma linha foi afetada.')
+                    return False
         except pg.IntegrityError as ie:
             print('An integrity error has occurred.')
             raise ie

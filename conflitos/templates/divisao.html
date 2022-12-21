@@ -32,10 +32,7 @@
         <!-- Permita cadastrar divisões dentro de um grupo militar, cadastre conflitos bélicos, grupos militares, líderes políticos e chefes militares -->
             <form name="cad_divisao" method="post" action = "{% url 'divisao' %}" class="col-4 d-flex flex-wrap">
               {% csrf_token %}
-                    <div class="col-md-8 col-lg-8 col-12">
-                        <label class="lbl-padrao" for = "nome_divisao" >Nome Divisão:</label>
-                        <input class="inp-padrao" type="text" name="nome_divisao" id = "nome_divisao" required>
-                    </div>
+            
                     <div class="col-md-8 col-lg-8 col-12">
                         <label class="lbl-padrao" for = "qtde_barcos" >Quantidade de Barcos:</label>
                         <input class="inp-padrao" type="number" id = "qtde_barcos" name="qtde_barcos" required>
@@ -62,7 +59,7 @@
                   <select class="form-select" aria-label="Default select example" name="select_divisao" required>
                     <option selected disabled value = "">Selecione o grupo armado da divisão</option>   
                     {% for row in data %}
-                        <option value= " {{ row.idgrupoarmado }} ">{{ row.nome }}</option>
+                        <option value= " {{ row.idgrupoarmado }} "> {{ row.nome }} </option>
                     {% endfor %}
                     </select>
                     <br>*É necessário cadastrar um grupo armado caso não tenha nenhum cadastrado. Clique <a href="{% url 'grupo_armado' %}">aqui</a> para cadastra-lo <br>

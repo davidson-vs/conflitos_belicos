@@ -44,7 +44,10 @@
                     <label class="lbl-padrao">Líder Político:</label>
                     <select class="form-select" aria-label="Default select example" name="lider_politico" required >
                       <option selected disabled>Selecione o líder político do chefe militar</option>
-                    <option value="1">Líder político 1</option>
+                      {% for row in data_lp %}
+                      <option value="{{row.idliderpolitico}}">{{row.nome}}</option>
+                      
+                      {% endfor %}
                     </select>
                     <br>*É necessário cadastrar um líder político caso não tenha nenhum cadastrado. Clique <a href="lideres_politicos.html">aqui</a> para cadastra-lo <br>
                     </div>
@@ -52,7 +55,10 @@
                         <label class="lbl-padrao">Divisão:</label>
                         <select class="form-select" aria-label="Default select example" name = "divisao" required>
                         <option selected disabled>Selecione a divisão do líder político</option>
-                        <option value="1">Divisão 1</option>
+                        {% for row in data_d %}
+                        
+                        <option value="{{row.idchefemilitar}}">{{row.nome}}</option>
+                        {% endfor %}
                         </select>
                         <br>*É necessário cadastrar uma divisão caso não tenha nenhuma cadastrada. Clique <a href="{% url 'divisao' %}">aqui</a> para cadastra-la <br>
                         <input type="submit" class="btn btn-light" id="enviar" value="Enviar">
