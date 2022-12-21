@@ -47,7 +47,9 @@ def chefe_militar(request):
         data_lp = db.get_multiple_result(cxn, consult_lider_politico)
         context['data_lp'] = data_lp
         
-        consult_divisao = """SELECT IdLiderPolitico, Nome From conflitosBelicos.Divisao"""
+        consult_divisao = """select d.iddivisao as iddivisao, ga.nome as nome from conflitosbelicos.Divisao as d 
+                             inner join conflitosbelicos.grupoarmado as ga
+                             on d.idgrupoarmado = ga.idgrupoarmado """
         data_d = db.get_multiple_result(cxn, consult_divisao)
         context['data_d'] = data_d
         
@@ -378,7 +380,14 @@ def participacao(request):
         db = Banco()
         context = {}
         cxn = db.connection()
-        
+        consult = """SELECT IdGrupoArmado, Nome From conflitosBelicos.GrupoArmado"""
+        data_ga = db.get_multiple_result(cxn, consult)
+        context['data_ga'] = data_ga
+
+        consult_c = """SELECT IdConflito, Nome From conflitosBelicos.Conflito"""
+        data_c = db.get_multiple_result(cxn, consult_c)
+        context['data_c'] = data_c
+
         if request.method == 'POST':
             # aqui vc recebe o valor de cada campo do form
             data_entrada = request.POST.get('data_entrada', None)
@@ -398,7 +407,7 @@ def participacao(request):
         context['mensagem'] = 'Falha ao realizar o cadastro!'   
         print(tp_conflito_error)
     finally:
-        return render(request, 'participacao.html', status=200, context={})
+        return render(request, 'participacao.html', status=200, context=context)
 
 def traficante(request):
     try:

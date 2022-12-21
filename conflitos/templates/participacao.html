@@ -43,8 +43,11 @@
                     <div class="col-md-8 col-lg-8 col-12">
                         <label class="lbl-padrao">Grupo Armado:</label>
                       <select class="form-select" aria-label="Default select example" name="select_participacao_grupo_armado" required>
-                        <option selected disabled value = "">Selecione o grupo armado</option>   
-                        <option value="1">Grupo Armado  1</option>
+                        <option selected disabled value = "">Selecione o grupo armado</option>
+                        {% for row in data_ga %}
+                          <option value="{{row.idgrupoarmado}}">{{row.nome}}</option>
+                        {% endfor %}   
+                        
                         </select>
                         <br>*É necessário cadastrar um grupo armado caso não tenha nenhum cadastrado. Clique <a href="{% url 'grupo_armado' %}">aqui</a> para cadastra-lo <br>
                       </div>
@@ -52,7 +55,10 @@
                         <label class="lbl-padrao">Conflito:</label>
                     <select class="form-select" aria-label="Default select example" name="select_participacao_conflito" required>
                         <option selected disabled value = "">Selecione o conflito</option>   
-                        <option value="1">Conflito  1</option>
+                        {% for row in data_c %}
+                          <option value="{{row.idconflito}}">{{row.nome}}</option>
+                        {% endfor %}
+                        
                         </select>
                         <br>*É necessário cadastrar um conflito caso não tenha nenhum cadastrado. Clique <a href="{% url 'conflitos' %}">aqui</a> para cadastra-lo <br>
                         <input type="submit" class="btn btn-light" id="enviar" value="Enviar">

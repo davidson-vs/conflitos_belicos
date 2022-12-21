@@ -57,7 +57,7 @@
                         <option selected disabled>Selecione a divisão do líder político</option>
                         {% for row in data_d %}
                         
-                        <option value="{{row.idchefemilitar}}">{{row.nome}}</option>
+                        <option value="{{row.iddivisao}}">{{row.nome}}</option>
                         {% endfor %}
                         </select>
                         <br>*É necessário cadastrar uma divisão caso não tenha nenhuma cadastrada. Clique <a href="{% url 'divisao' %}">aqui</a> para cadastra-la <br>
