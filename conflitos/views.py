@@ -208,6 +208,8 @@ def tipo_conflito(request):
             qtde_baixas = request.POST.get('qtde_baixas', None)
             select_divisao = request.POST.get('select_divisao', None)
 
+           
+
             query = f""" INSERT INTO conflitosBelicos.Divisao ( NumeroBarcos, NumeroTanques, NumeroBaixas, NumeroHomens, NumeroAvioes, IdGrupoArmado)
             VALUES ( {qtde_barcos}, {qtde_tanques}, {qtde_baixas}, {qtde_homens}, {qtde_avioes}, {select_divisao}) """
             
@@ -222,7 +224,7 @@ def tipo_conflito(request):
         context['mensagem_erro'] = 'Falha ao realizar o cadastro!'   
         print(tp_conflito_error)
     finally:
-        return render(request, 'tipo_conflito.html', status=200, context={})
+        return render(request, 'tipo_conflito.html', status=200, context=context)
 
 def arma(request):
     try:
@@ -236,12 +238,15 @@ def arma(request):
             tipo_arma = request.POST.get('tipo_arma', None)
             capacidade_destrutiva = request.POST.get('capacidade_destrutiva', None)
             select_arma = request.POST.get('select_arma', None)
+            
+            consult = """SELECT idtraficante, nome from conflitosbelicos.traficante"""
+            data = db.get_multiple_result(cxn, consult)
+            
+            context['data'] = data
 
             query = f""" INSERT INTO conflitosBelicos.Arma ( Nome, TipoArma, CapacidadeDestrutiva, IdTraficante )
-            VALUES ('{nome}', '{tipo_arma}', '{capacidade_destrutiva}', {select_arma}) """
-            db.execute_query(cxn, query, persistence=True, params=(
-                nome
-            ))        
+            VALUES ('{nome}', '{tipo_arma}', {capacidade_destrutiva}, {select_arma}) """
+            db.execute_query(cxn, query, persistence=True)        
             
             context['mensagem'] = 'Cadastro realizado com sucesso!'   
         
@@ -249,13 +254,21 @@ def arma(request):
         context['mensagem'] = 'Falha ao realizar o cadastro!'   
         print(tp_conflito_error)
     finally:
-        return render(request, 'arma.html', status=200, context={})
+        return render(request, 'arma.html', status=200, context=context)
 
 def dialogo(request):
     try:
         db = Banco()
         context = {}
         cxn = db.connection()
+        consult_l = """SELECT idliderpolitico, nome from conflitosbelicos.liderpolitico"""
+        data_l = db.get_multiple_result(cxn, consult_l)
+            
+        context['data_l'] = data_l
+        consult_o = """SELECT idorganizacao, nome from conflitosbelicos.organizacaomediadora"""
+        data_o = db.get_multiple_result(cxn, consult_o)
+            
+        context['data_o'] = data_o
         
         if request.method == 'POST':
             # aqui vc recebe o valor de cada campo do form
@@ -273,7 +286,7 @@ def dialogo(request):
         context['mensagem'] = 'Falha ao realizar o cadastro!'   
         print(tp_conflito_error)
     finally:
-        return render(request, 'dialogo.html', status=200, context={})
+        return render(request, 'dialogo.html', status=200, context=context)
     
 
 def negociacao(request):
@@ -281,12 +294,19 @@ def negociacao(request):
         db = Banco()
         context = {}
         cxn = db.connection()
-        
+        consult_ga = """SELECT idgrupoarmado, nome from conflitosbelicos.grupoarmado"""
+        data_ga = db.get_multiple_result(cxn, consult_ga)
+        context['data_ga'] = data_ga
+        consult_a = """SELECT idarma, nome from conflitosbelicos.arma"""
+        data_a = db.get_multiple_result(cxn, consult_a)
+        context['data_a'] = data_a
         if request.method == 'POST':
             # aqui vc recebe o valor de cada campo do form
             qtde_armas = request.POST.get('qtde_armas', None)
             select_negociacao_grupo_armado = request.POST.get('select_negociacao_grupo_armado', None)
             select_negociacao_arma = request.POST.get('select_negociacao_arma', None)
+
+            
 
             query = f""" INSERT INTO conflitosBelicos.Negociacao ( QtdeArma, IdGrupoArmado, IdArma )
             VALUES ('{qtde_armas}', {select_negociacao_grupo_armado},  {select_negociacao_arma}) """
@@ -298,7 +318,7 @@ def negociacao(request):
         context['mensagem'] = 'Falha ao realizar o cadastro!'   
         print(tp_conflito_error)
     finally:
-        return render(request, 'negociacao.html', status=200, context={})
+        return render(request, 'negociacao.html', status=200, context=context)
 
 def mediacao(request):
     try:
@@ -393,7 +413,7 @@ def participacao(request):
             data_entrada = request.POST.get('data_entrada', None)
             data_saida = request.POST.get('data_saida', None)
             select_participacao_grupo_armado = request.POST.get('select_participacao_grupo_armado', None)
-            select_participacao_conflito = request.POST.get('data_entrada', None)
+            select_participacao_conflito = request.POST.get('select_participacao_conflito', None)
             data_entrada = request.POST.get('data_entrada', None)
             
             query = f""" INSERT INTO conflitosBelicos.Participacao ( DtEntrada, DtSaida, IdConflito, IdGrupoArmado )

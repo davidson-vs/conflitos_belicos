@@ -40,7 +40,9 @@
                         <label class="lbl-padrao">Grupo Armado:</label>
                       <select class="form-select" aria-label="Default select example" name="select_negociacao_grupo_armado" required>
                         <option selected disabled value = "">Selecione o grupo armado</option>   
-                        <option value="1">Grupo Armado  1</option>
+                        {% for i in data_ga %}
+                          <option value="{{i.idgrupoarmado}}">{{i.nome}}  </option>
+                        {% endfor %}
                         </select>
                         <br>*É necessário cadastrar um grupo armado caso não tenha nenhum cadastrado. Clique <a href="{% url 'grupo_armado' %}">aqui</a> para cadastra-lo <br>
                       </div>
@@ -49,7 +51,10 @@
                         <label class="lbl-padrao">Arma:</label>
                     <select class="form-select" aria-label="Default select example" name="select_negociacao_arma" required>
                         <option selected disabled value = "">Selecione o a arma sendo negociada</option>   
-                        <option value="1">Arma  1</option>
+                        
+                        {% for j in data_a %}
+                          <option value="{{j.idarma}}">{{j.nome}}  </option>
+                        {% endfor %}
                         </select>
                         <br>*É necessário cadastrar uma arma caso não tenha nenhuma cadastrada. Clique <a href="{% url 'arma' %}">aqui</a> para cadastra-la <br>
                         <input type="submit" class="btn btn-light" id="enviar" value="Enviar">

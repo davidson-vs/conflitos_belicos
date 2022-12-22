@@ -48,7 +48,11 @@
                     <label class="lbl-padrao">Traficante:</label>
                   <select class="form-select" aria-label="Default select example" name="select_arma" required>
                     <option selected disabled value = "">Selecione o traficante da arma</option>   
-                    <option value="1">Traficante  1</option>
+                  
+                    {% for i in data %}
+                        <option value="{{ i.idtraficante }}">{{ i.nome }}</option>
+                        
+                    {% endfor %}
                     </select>
                     <br>*É necessário cadastrar um traficante caso não tenha nenhum cadastrado. Clique <a href="{% url 'traficante' %}">aqui</a> para cadastra-lo <br>
                     <input type="submit" class="btn btn-light" id="enviar" value="Enviar">
