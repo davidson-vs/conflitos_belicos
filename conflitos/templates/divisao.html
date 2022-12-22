@@ -32,7 +32,10 @@
         <!-- Permita cadastrar divisões dentro de um grupo militar, cadastre conflitos bélicos, grupos militares, líderes políticos e chefes militares -->
             <form name="cad_divisao" method="post" action = "{% url 'divisao' %}" class="col-4 d-flex flex-wrap">
               {% csrf_token %}
-            
+                    <div class="col-md-8 col-lg-8 col-12">
+                      <label class="lbl-padrao" for = "num_div" >Número da Divisão:</label>
+                      <input class="inp-padrao" type="number" placeholder='Deve ser consecutivo' id = "num_div" name="num_div" required>
+                  </div>
                     <div class="col-md-8 col-lg-8 col-12">
                         <label class="lbl-padrao" for = "qtde_barcos" >Quantidade de Barcos:</label>
                         <input class="inp-padrao" type="number" id = "qtde_barcos" name="qtde_barcos" required>

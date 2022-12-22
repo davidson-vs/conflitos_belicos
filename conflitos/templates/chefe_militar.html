@@ -49,12 +49,22 @@
                       
                       {% endfor %}
                     </select>
-                    <br>*É necessário cadastrar um líder político caso não tenha nenhum cadastrado. Clique <a href="lideres_politicos.html">aqui</a> para cadastra-lo <br>
+                    <br>*É necessário cadastrar um líder político caso não tenha nenhum cadastrado. Clique <a href="{% url 'lideres_politicos' %}">aqui</a> para cadastra-lo <br>
                     </div>
+                    <div class="col-md-8 col-lg-8 col-12">
+                      <label class="lbl-padrao">Grupo Armado:</label>
+                      <select class="form-select" aria-label="Default select example" name = "divisao" required>
+                      <option selected disabled>Selecione o grupo armado</option>
+                      {% for row in data_d %}
+                      <option value="{{row.idgrupoarmado}}">{{row.nome}}</option>
+                      {% endfor %}
+                      </select>
+                      <br>*É necessário cadastrar um grupo armado não tenha nenhum cadastrado. Clique <a href="{% url 'grupo_armado' %}">aqui</a> para cadastra-la <br>
+                  </div>
                     <div class="col-md-8 col-lg-8 col-12">
                         <label class="lbl-padrao">Divisão:</label>
                         <select class="form-select" aria-label="Default select example" name = "divisao" required>
-                        <option selected disabled>Selecione a divisão do líder político</option>
+                        <option selected disabled>Selecione a divisão dentro do grupo armado</option>
                         {% for row in data_d %}
                         
                         <option value="{{row.iddivisao}}">{{row.nome}}</option>
