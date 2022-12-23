@@ -35,7 +35,62 @@ def grafics_page(request):
         return render(request, 'grafics.html', status=200)
 
 def lists_page(request):
-    return render(request, 'lists.html', status=200, context={})
+    try:
+        db = Banco()
+        cxn = db.connection()
+        context = {}
+        if request.method == 'POST':
+            opt = request.POST.get('list_opt', None)
+            if opt == '1': # ii. Listar os traficantes e os grupos armados (Nome) para os quais os traficantes fornecem armas “Barret M82” ou “M200 intervention”. 
+                data = db.get_multiple_result(cxn, """SELECT DISTINCT T.Nome AS Nome_Traficante, GA.Nome AS Nome_Grupo_Armado, A.Nome AS Arma_Fornecida
+                FROM conflitosBelicos.Arma AS A, conflitosBelicos.Negociacao AS N, conflitosBelicos.GrupoArmado AS GA, conflitosBelicos.Traficante AS T
+                WHERE A.IdTraficante = A.IdTraficante AND GA.IdGrupoArmado = N.IdGrupoArmado AND A.IdArma = N.IdArma
+                AND (A.nome = 'Barret M82' OR A.nome = 'M200 intervention')""")
+
+            elif opt == '2': # iii. Listar os 5 maiores conflitos em número de mortos.
+                data = db.get_multiple_result(cxn, """SELECT Nome, NumeroMortos AS Numero_Mortos
+                FROM conflitosbelicos.Conflito
+                ORDER BY Numero_Mortos DESC LIMIT 5""")
+
+            elif opt == "3": # iv. Listar as 5 maiores organizações em número de mediações.
+                data = db.get_multiple_result(cxn,  """SELECT Nome AS Nome_Organizacoes, COUNT(*) AS Numero_Mediacoes
+                FROM conflitosbelicos.OrganizacaoMediadora AS OM, conflitosbelicos.Mediacao AS MED
+                WHERE OM.IdOrganizacao = MED.IdOrganizacao
+                GROUP BY OM.idOrganizacao
+                ORDER BY Numero_Mediacoes DESC LIMIT 5""")
+
+
+            elif opt == "4": # v. Listar os 5 maiores grupos armados com maior número de armas fornecidos.
+                data = db.get_multiple_result(cxn, """SELECT Nome AS Nome_Grupo_Armado, SUM(QtdeArma) AS Numero_Armas
+                FROM conflitosbelicos.GrupoArmado AS G, conflitosbelicos.Negociacao AS N
+                WHERE G.IdGrupoArmado = N.IdGrupoArmado
+                GROUP BY G.IdGrupoArmado
+                ORDER BY Numero_Armas DESC LIMIT 5""")
+
+            elif opt == "5": # vi. Listar o país e número de conflitos com maior número de conflitos religiosos.
+                data = db.get_multiple_result(cxn, """SELECT P.Nome AS Nome_Pais, COUNT(*) AS Numero_Conflitos_Religiosos
+                FROM conflitosbelicos.Pais AS P, conflitosbelicos.Conflito AS C
+                WHERE P.idPais = C.idPais AND tipoconflito = 'religioso'
+                GROUP BY P.idPais
+                ORDER BY Numero_Conflitos_Religiosos DESC LIMIT 1""")
+
+            print(data)
+            df = pd.DataFrame(data)
+            colunas = df.columns
+            new_colunas = []
+            for coluna in colunas:
+                lista = coluna.split("_")
+                new_coluna = " ".join(lista)
+                new_colunas.append(new_coluna.capitalize())
+            df.columns = new_colunas
+            context['data'] = df.to_html(justify='center')
+
+            if data == []:
+                context['mensagem'] = 'A consulta não retornou nenhum caso. Não há dados cadastrados suficientes.'
+    except Exception as error:
+        print(error)
+    finally:    
+        return render(request, 'lists.html', status=200, context=context)
 
 
 def chefe_militar(request):
@@ -47,9 +102,9 @@ def chefe_militar(request):
         data_lp = db.get_multiple_result(cxn, consult_lider_politico)
         context['data_lp'] = data_lp
         
-        consult_divisao = """select d.iddivisao as iddivisao, ga.nome as nome from conflitosbelicos.Divisao as d 
-                             inner join conflitosbelicos.grupoarmado as ga
-                             on d.idgrupoarmado = ga.idgrupoarmado """
+        consult_divisao = """SELECT D.IdDivisao, GA.Nome, GA.IdGrupoArmado as idga
+                            FROM conflitosbelicos.Divisao AS D, conflitosbelicos.GrupoArmado AS GA
+                            WHERE D.IdDivisao = GA.IdGrupoArmado """
         data_d = db.get_multiple_result(cxn, consult_divisao)
         context['data_d'] = data_d
         
@@ -58,14 +113,18 @@ def chefe_militar(request):
             nm_chefe = request.POST.get('chefe_militar', None)
             descricao_lider = request.POST.get('descricao_lider', None)
             lider_politico = request.POST.get('lider_politico', None)
-            divisao = request.POST.get('divisao', None)
+            divisao_ga = request.POST.get('divisao', None)
+            divisao = divisao_ga.split('|')[0]
+            grupo_armado = divisao_ga.split('|')[1]
 
-            insert_query = f""" INSERT INTO conflitosBelicos.ChefeMilitar ( Nome, FaixaHierarquica, IdLiderpolitico, IdDivisao)
-            VALUES ('{nm_chefe}', '{descricao_lider}', '{lider_politico}', '{divisao}') """
+            insert_query = f""" INSERT INTO conflitosBelicos.ChefeMilitar ( Nome, FaixaHierarquica, IdLiderpolitico, IdDivisao, idGrupoArmado)
+            VALUES ('{nm_chefe}', '{descricao_lider}', {lider_politico}, {divisao}, {grupo_armado}) """
 
-            db.execute_query(cxn, insert_query, persistence=True,) 
+            db.execute_query(cxn, insert_query, persistence=True,)
+            context['mensagem'] = 'Cadastro concluido com sucesso!' 
 
     except Exception as cf_militar_error:
+        context['mensagem'] = 'Não foi possível realizar o cadastro!' 
         print(cf_militar_error)
     finally:
         return render(request, 'chefe_militar.html', status=200, context=context)
@@ -95,7 +154,7 @@ def conflitos(request):
             context['mensagem'] = 'Cadastro realizado com sucesso!'   
 
     except Exception as tp_conflito_error:
-        context['mensagem'] = 'Falha ao realizar o cadastro!'   
+        context['mensagem'] = 'Não foi possível realizar o cadastro!'   
         print(tp_conflito_error)
     finally:
         return render(request, 'conflitos.html', status=200, context=context)
@@ -112,6 +171,7 @@ def divisao(request):
         context['data'] = data
         if request.method == 'POST':
             # aqui vc recebe o valor de cada campo do form
+            num_div = request.POST.get('num_div', None)
             qtde_barcos = request.POST.get('qtde_barcos', None)
             qtde_tanques = request.POST.get('qtde_tanques', None)
             qtde_homens = request.POST.get('qtde_homens', None)
@@ -119,15 +179,15 @@ def divisao(request):
             qtde_baixas = request.POST.get('qtde_baixas', None)
             select_divisao = request.POST.get('select_divisao', None)
 
-            query = f""" INSERT INTO conflitosBelicos.Divisao ( NumeroBarcos, NumeroTanques, NumeroBaixas, NumeroHomens, NumeroAvioes, IdGrupoArmado)
-            VALUES ( {qtde_barcos}, {qtde_tanques}, {qtde_baixas}, {qtde_homens}, {qtde_avioes}, {select_divisao}) """
+            query = f""" INSERT INTO conflitosBelicos.Divisao ( idDivisao, NumeroBarcos, NumeroTanques, NumeroBaixas, NumeroHomens, NumeroAvioes, IdGrupoArmado)
+            VALUES ( {num_div}, {qtde_barcos}, {qtde_tanques}, {qtde_baixas}, {qtde_homens}, {qtde_avioes}, {select_divisao}) """
             
             db.execute_query(cxn, query, persistence=True)        
             
             context['mensagem'] = 'Cadastro realizado com sucesso!'   
         
     except Exception as tp_conflito_error:
-        context['mensagem'] = 'Falha ao realizar o cadastro!'   
+        context['mensagem'] = 'Não foi possível realizar o cadastro!'   
         print(tp_conflito_error)
     finally:
         return render(request, 'divisao.html', status=200, context=context)
@@ -151,10 +211,10 @@ def grupo_armado(request):
             context['mensagem'] = 'Cadastro realizado com sucesso!'   
         
     except Exception as tp_conflito_error:
-        context['mensagem'] = 'Falha ao realizar o cadastro!'   
+        context['mensagem'] = 'Não foi possível realizar o cadastro!'   
         print(tp_conflito_error)
     finally:
-        return render(request, 'grupo_armado.html', status=200, context={})
+        return render(request, 'grupo_armado.html', status=200, context=context)
     
 
 def liders_politicos(request):
@@ -179,7 +239,7 @@ def liders_politicos(request):
             context['mensagem'] = 'Cadastro realizado com sucesso!'   
         
     except Exception as tp_conflito_error:
-        context['mensagem'] = 'Falha ao realizar o cadastro!'   
+        context['mensagem'] = 'Não foi possível realizar o cadastro!'   
         print(tp_conflito_error)
     finally:
         return render(request, 'lideres_politicos.html', status=200, context=context)
@@ -221,7 +281,7 @@ def tipo_conflito(request):
                 context['mensagem'] = 'Os dados não foram inseridos por conta da regra de negócio.'   
         
     except Exception as tp_conflito_error:
-        context['mensagem_erro'] = 'Falha ao realizar o cadastro!'   
+        context['mensagem_erro'] = 'Não foi possível realizar o cadastro!'   
         print(tp_conflito_error)
     finally:
         return render(request, 'tipo_conflito.html', status=200, context=context)
@@ -231,7 +291,10 @@ def arma(request):
         db = Banco()
         context = {}
         cxn = db.connection()
-        
+        consult = """SELECT idtraficante, nome from conflitosbelicos.traficante"""
+        data = db.get_multiple_result(cxn, consult)
+            
+        context['data'] = data
         if request.method == 'POST':
             # aqui vc recebe o valor de cada campo do form
             nome = request.POST.get('nome_arma', None)
@@ -239,10 +302,7 @@ def arma(request):
             capacidade_destrutiva = request.POST.get('capacidade_destrutiva', None)
             select_arma = request.POST.get('select_arma', None)
             
-            consult = """SELECT idtraficante, nome from conflitosbelicos.traficante"""
-            data = db.get_multiple_result(cxn, consult)
             
-            context['data'] = data
 
             query = f""" INSERT INTO conflitosBelicos.Arma ( Nome, TipoArma, CapacidadeDestrutiva, IdTraficante )
             VALUES ('{nome}', '{tipo_arma}', {capacidade_destrutiva}, {select_arma}) """
@@ -251,7 +311,7 @@ def arma(request):
             context['mensagem'] = 'Cadastro realizado com sucesso!'   
         
     except Exception as tp_conflito_error:
-        context['mensagem'] = 'Falha ao realizar o cadastro!'   
+        context['mensagem'] = 'Não foi possível realizar o cadastro!'   
         print(tp_conflito_error)
     finally:
         return render(request, 'arma.html', status=200, context=context)
@@ -283,7 +343,7 @@ def dialogo(request):
             context['mensagem'] = 'Cadastro realizado com sucesso!'   
         
     except Exception as tp_conflito_error:
-        context['mensagem'] = 'Falha ao realizar o cadastro!'   
+        context['mensagem'] = 'Não foi possível realizar o cadastro!'   
         print(tp_conflito_error)
     finally:
         return render(request, 'dialogo.html', status=200, context=context)
@@ -302,20 +362,18 @@ def negociacao(request):
         context['data_a'] = data_a
         if request.method == 'POST':
             # aqui vc recebe o valor de cada campo do form
-            qtde_armas = request.POST.get('qtde_armas', None)
+            qtde_armas = request.POST.get('qtde_arma', None)
             select_negociacao_grupo_armado = request.POST.get('select_negociacao_grupo_armado', None)
             select_negociacao_arma = request.POST.get('select_negociacao_arma', None)
 
-            
-
             query = f""" INSERT INTO conflitosBelicos.Negociacao ( QtdeArma, IdGrupoArmado, IdArma )
-            VALUES ('{qtde_armas}', {select_negociacao_grupo_armado},  {select_negociacao_arma}) """
+            VALUES ({qtde_armas}, {select_negociacao_grupo_armado},  {select_negociacao_arma}) """
             db.execute_query(cxn, query, persistence=True)        
             
             context['mensagem'] = 'Cadastro realizado com sucesso!'   
         
     except Exception as tp_conflito_error:
-        context['mensagem'] = 'Falha ao realizar o cadastro!'   
+        context['mensagem'] = 'Não foi possível realizar o cadastro!'   
         print(tp_conflito_error)
     finally:
         return render(request, 'negociacao.html', status=200, context=context)
@@ -342,10 +400,10 @@ def mediacao(request):
             context['mensagem'] = 'Cadastro realizado com sucesso!'   
         
     except Exception as tp_conflito_error:
-        context['mensagem'] = 'Falha ao realizar o cadastro!'   
+        context['mensagem'] = 'Não foi possível realizar o cadastro!'   
         print(tp_conflito_error)
     finally:
-        return render(request, 'mediacao.html', status=200, context={})
+        return render(request, 'mediacao.html', status=200, context=context)
 
 def organizacao_mediadora(request):
     try:
@@ -367,10 +425,10 @@ def organizacao_mediadora(request):
             context['mensagem'] = 'Cadastro realizado com sucesso!'   
 
     except Exception as tp_conflito_error:
-        context['mensagem'] = 'Falha ao realizar o cadastro!'   
+        context['mensagem'] = 'Não foi possível realizar o cadastro!'   
         print(tp_conflito_error)
     finally:
-        return render(request, 'organizacao_mediadora.html', status=200, context={})
+        return render(request, 'organizacao_mediadora.html', status=200, context=context)
     
 
 def pais(request):
@@ -378,6 +436,7 @@ def pais(request):
         db = Banco()
         context = {}
         cxn = db.connection()
+        
        
         if request.method == 'POST':
             # aqui vc recebe o valor de cada campo do form
@@ -389,10 +448,10 @@ def pais(request):
             context['mensagem'] = 'Cadastro realizado com sucesso!'   
 
     except Exception as tp_conflito_error:
-        context['mensagem'] = 'Falha ao realizar o cadastro!'   
+        context['mensagem'] = 'Não foi possível realizar o cadastro!'   
         print(tp_conflito_error)
     finally:
-        return render(request, 'pais.html', status=200, context={})
+        return render(request, 'pais.html', status=200, context=context)
     
 
 def participacao(request):
@@ -424,7 +483,7 @@ def participacao(request):
             context['mensagem'] = 'Cadastro realizado com sucesso!'   
 
     except Exception as tp_conflito_error:
-        context['mensagem'] = 'Falha ao realizar o cadastro!'   
+        context['mensagem'] = 'Não foi possível realizar o cadastro!'   
         print(tp_conflito_error)
     finally:
         return render(request, 'participacao.html', status=200, context=context)
@@ -446,8 +505,8 @@ def traficante(request):
             context['mensagem'] = 'Cadastro realizado com sucesso!'   
 
     except Exception as tp_conflito_error:
-        context['mensagem'] = 'Falha ao realizar o cadastro!'   
+        context['mensagem'] = 'Não foi possível realizar o cadastro!'   
         print(tp_conflito_error)
     finally:
-        return render(request, 'traficante.html', status=200, context={})
+        return render(request, 'traficante.html', status=200, context=context)
     

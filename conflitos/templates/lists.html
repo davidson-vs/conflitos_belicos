@@ -30,16 +30,26 @@
         <h1>Consultas</h1>
         <hr>
         <!-- Permita cadastrar divisões dentro de um grupo militar, cadastre conflitos bélicos, grupos militares, líderes políticos e chefes militares -->
-        <select class="form-select" aria-label="Default select example" name="list_opt">
-            <option selected disabled>Selecione a consulta desejada</option>
-            <option value="1">Listar os traficantes e os grupos armados (Nome) para os quais os traficantes fornecem armas “Barret M82” ou “M200 intervention”</option>
-            <option value="2">Listar os 5 maiores conflitos em número de mortos</option>
-            <option value="3">Listar as 5 maiores organizações em número de mediações</option>
-            <option value="4">Listar os 5 maiores grupos armados com maior número de armas fornecidos.</option>
-            <option value="5">Listar o país e número de conflitos com maior número de conflitos religiosos</option>
-        </select>
-
-    </section>
+        <form name="cad_chefe" class="col-4 d-flex flex-wrap" method="post">
+          {% csrf_token %}
+          <select class="form-select" aria-label="Default select example" name="list_opt">
+              <option selected disabled>Selecione a consulta desejada</option>
+              <option value="1">Listar os traficantes e os grupos armados (Nome) para os quais os traficantes fornecem armas “Barret M82” ou “M200 intervention”</option>
+              <option value="2">Listar os 5 maiores conflitos em número de mortos</option>
+              <option value="3">Listar as 5 maiores organizações em número de mediações</option>
+              <option value="4">Listar os 5 maiores grupos armados com maior número de armas fornecidos.</option>
+              <option value="5">Listar o país e número de conflitos com maior número de conflitos religiosos</option>
+            </select>
+              <input type="submit" class="btn btn-light" id="enviar" value="Consultar">
+            </form>
+             <br>
+             <br>
+             <center>
+              {{mensagem}}
+              {% autoescape off %}{{ data|safe }}{% endautoescape %}
+            </center>
+                         
+        
 
     
     

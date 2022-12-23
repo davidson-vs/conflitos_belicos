@@ -52,31 +52,21 @@
                     <br>*É necessário cadastrar um líder político caso não tenha nenhum cadastrado. Clique <a href="{% url 'lideres_politicos' %}">aqui</a> para cadastra-lo <br>
                     </div>
                     <div class="col-md-8 col-lg-8 col-12">
-                      <label class="lbl-padrao">Grupo Armado:</label>
-                      <select class="form-select" aria-label="Default select example" name = "divisao" required>
-                      <option selected disabled>Selecione o grupo armado</option>
-                      {% for row in data_d %}
-                      <option value="{{row.idgrupoarmado}}">{{row.nome}}</option>
-                      {% endfor %}
-                      </select>
-                      <br>*É necessário cadastrar um grupo armado não tenha nenhum cadastrado. Clique <a href="{% url 'grupo_armado' %}">aqui</a> para cadastra-la <br>
-                  </div>
-                    <div class="col-md-8 col-lg-8 col-12">
-                        <label class="lbl-padrao">Divisão:</label>
+                        <label class="lbl-padrao">Divisão e Grupo Armado:</label>
                         <select class="form-select" aria-label="Default select example" name = "divisao" required>
-                        <option selected disabled>Selecione a divisão dentro do grupo armado</option>
+                        <option selected disabled>Selecione a divisão de seu respectivo grupo armado</option>
                         {% for row in data_d %}
                         
-                        <option value="{{row.iddivisao}}">{{row.nome}}</option>
+                        <option value="{{row.iddivisao}}|{{row.idga}}">Divisão {{row.iddivisao}} - {{row.nome}}</option>
                         {% endfor %}
                         </select>
                         <br>*É necessário cadastrar uma divisão caso não tenha nenhuma cadastrada. Clique <a href="{% url 'divisao' %}">aqui</a> para cadastra-la <br>
                         <input type="submit" class="btn btn-light" id="enviar" value="Enviar">
                     </div>
+                    <p>{{mensagem}}</p>
             </form>
     </section>
 
-    
     
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>

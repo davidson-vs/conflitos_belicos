@@ -49,8 +49,8 @@
                   <select class="form-select" aria-label="Default select example" name="select_arma" required>
                     <option selected disabled value = "">Selecione o traficante da arma</option>   
                   
-                    {% for i in data %}
-                        <option value="{{ i.idtraficante }}">{{ i.nome }}</option>
+                    {% for k in data %}
+                        <option value="{{ k.idtraficante }}">{{ k.nome }}</option>
                         
                     {% endfor %}
                     </select>
@@ -58,6 +58,7 @@
                     <input type="submit" class="btn btn-light" id="enviar" value="Enviar">
                   </div>
               </form>
+              {{mensagem}}
     </section>
 
     
