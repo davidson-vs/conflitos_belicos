@@ -2,7 +2,7 @@ import psycopg2 as pg
  
 class Banco:
     @staticmethod
-    def connection(host: str = 'localhost', database:str = 'db_conflitos_belicos', user:str ='postgres', password: str = "virtual10"):
+    def connection(host: str = 'localhost', database:str = 'postgres', user:str ='postgres', password: str = "1234"):
         try:
             cxn = pg.connect(f'host = {host} dbname={database} user = {user} password = {password} ')
             if cxn :

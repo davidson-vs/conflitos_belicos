@@ -34,7 +34,7 @@
               {% csrf_token %}
                   <div class="col-md-8 col-lg-8 col-12">
                     <label class="lbl-padrao">Conflito de caráter:</label>
-                  <select class="form-select" aria-label="Default select example" required>
+                  <select class="form-select" aria-label="Default select example" name="tp_conflito" required>
                     <option selected disabled>Selecione a causa do conflito</option>
                     <option value="Territorial">Territorial</option>
                     <option value="Religioso">Religioso</option>
@@ -43,11 +43,22 @@
                     </select>
                     </div>
                     <div class="col-md-8 col-lg-8 col-12">
-                        <label class="lbl-padrao">Matéria prima disputada:</label>
-                        <input class="inp-padrao" type="text" name="nome_divisao" required>
-                        <br>Caso queira inserir mais de uma matéria prima, envie outro cadastro.<br>
-                        <input type="submit" class="btn btn-light" id="enviar" value="Enviar">
+                        <label class="lbl-padrao"><li>Digite a Região afetada caso for Territorial;</li> <li>A religião afetada, caso for Religioso;</li>
+                          <li>A matéria prima disputada, caso for um conflito econômico;</li>  <li>A Etnia enfrentada caso for racial:</li></label>
+                        <input class="inp-padrao" type="text" name="tp_descricao" required>
                     </div>    
+                    <div class="col-md-8 col-lg-8 col-12">
+                        <label class="lbl-padrao">Conflito:</label>
+                    <select class="form-select" aria-label="Default select example" name="select_tp_conflito" required>
+                        <option selected disabled value = "">Selecione o conflito</option>   
+                        {% for row in data %}
+                          <option value="{{row.idconflito}}">{{row.nome}}</option>
+                        {% endfor %}
+                        
+                        </select>
+                        <br>*É necessário cadastrar um conflito caso não tenha nenhum cadastrado. Clique <a href="{% url 'conflitos' %}">aqui</a> para cadastra-lo <br>
+                        <input type="submit" class="btn btn-light" id="enviar" value="Enviar">
+                    </div>
               </form>
     </section>
 

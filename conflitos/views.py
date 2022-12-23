@@ -102,7 +102,7 @@ def chefe_militar(request):
         data_lp = db.get_multiple_result(cxn, consult_lider_politico)
         context['data_lp'] = data_lp
         
-        consult_divisao = """SELECT D.IdDivisao, GA.Nome, GA.IdGrupoArmado as idga
+        consult_divisao = """SELECT DISTINCT D.IdDivisao, GA.Nome, GA.IdGrupoArmado as idga
                             FROM conflitosbelicos.Divisao AS D, conflitosbelicos.GrupoArmado AS GA
                             WHERE D.IdDivisao = GA.IdGrupoArmado """
         data_d = db.get_multiple_result(cxn, consult_divisao)
@@ -254,24 +254,31 @@ def tipo_conflito(request):
             headers = json.load(f)
             context['json'] = [headers]
         cxn = db.connection()
-        consult = """SELECT IdGrupoArmado, Nome From conflitosBelicos.GrupoArmado"""
+        consult =  """SELECT idconflito, nome from conflitosbelicos.conflito"""
         data = db.get_multiple_result(cxn, consult)
         context['data'] = data
-        
-
         if request.method == 'POST':
             # aqui vc recebe o valor de cada campo do form
-            qtde_barcos = request.POST.get('qtde_barcos', None)
-            qtde_tanques = request.POST.get('qtde_tanques', None)
-            qtde_homens = request.POST.get('qtde_homens', None)
-            qtde_avioes = request.POST.get('qtde_avioes', None)
-            qtde_baixas = request.POST.get('qtde_baixas', None)
-            select_divisao = request.POST.get('select_divisao', None)
+            
+            tp_conflito = request.POST.get('tp_conflito', None)
+            tp_descricao = request.POST.get('tp_descricao', None)
+            
+            idConflito = data[0]['idconflito']
+            nome = data[0]['nome']
 
-           
+            if tp_conflito =='Territorial':
+               query = f""" INSERT INTO conflitosBelicos.Territorial ( Regiao, idConflito)
+                VALUES ( {tp_descricao}, {idConflito}) """
+            elif tp_conflito == "Religioso":
+                query = f""" INSERT INTO conflitosBelicos.Religioso ( Religiao, idConflito)
+                VALUES ( {tp_descricao}, {idConflito}) """
+            elif tp_conflito == "Economico":
+                query = f""" INSERT INTO conflitosBelicos.Economico ( MateriaPrima, idConflito)
+                VALUES ( {tp_descricao}, {idConflito}) """
+            elif tp_conflito == "Racial":
+                query = f""" INSERT INTO conflitosBelicos.Racial ( Etnia, idConflito)
+                VALUES ( {tp_descricao}, {idConflito}) """
 
-            query = f""" INSERT INTO conflitosBelicos.Divisao ( NumeroBarcos, NumeroTanques, NumeroBaixas, NumeroHomens, NumeroAvioes, IdGrupoArmado)
-            VALUES ( {qtde_barcos}, {qtde_tanques}, {qtde_baixas}, {qtde_homens}, {qtde_avioes}, {select_divisao}) """
             
             response = db.execute_query(cxn, query, persistence=True)        
 
